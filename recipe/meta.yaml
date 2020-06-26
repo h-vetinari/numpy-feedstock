@@ -60,6 +60,8 @@ test:
     - pytest-xdist  # [aarch64]
     - hypothesis
     - setuptools
+    # make sure we test with all blas implementations
+    - blas =*=*{{ blas_impl }}
   commands:
     - f2py -h
     {% set numproc = "-nauto" if aarch64 else "" %}
