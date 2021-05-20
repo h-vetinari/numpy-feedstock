@@ -8,6 +8,51 @@ jobs:
     vmImage: vs2017-win2016
   strategy:
     matrix:
+      win_64_blas_implblisnumpy1.17python3.7.____cpython_parallel:
+        CONFIG: win_64_blas_implblisnumpy1.17python3.7.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implblisnumpy1.17python3.8.____cpython_parallel:
+        CONFIG: win_64_blas_implblisnumpy1.17python3.8.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implblisnumpy1.19python3.9.____cpython_parallel:
+        CONFIG: win_64_blas_implblisnumpy1.19python3.9.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implmklnumpy1.17python3.7.____cpython_parallel:
+        CONFIG: win_64_blas_implmklnumpy1.17python3.7.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implmklnumpy1.17python3.8.____cpython_parallel:
+        CONFIG: win_64_blas_implmklnumpy1.17python3.8.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implmklnumpy1.19python3.9.____cpython_parallel:
+        CONFIG: win_64_blas_implmklnumpy1.19python3.9.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implnetlibnumpy1.17python3.7.____cpython_parallel:
+        CONFIG: win_64_blas_implnetlibnumpy1.17python3.7.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implnetlibnumpy1.17python3.8.____cpython_parallel:
+        CONFIG: win_64_blas_implnetlibnumpy1.17python3.8.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implnetlibnumpy1.19python3.9.____cpython_parallel:
+        CONFIG: win_64_blas_implnetlibnumpy1.19python3.9.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implopenblasnumpy1.17python3.7.____cpython_parallel:
+        CONFIG: win_64_blas_implopenblasnumpy1.17python3.7.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implopenblasnumpy1.17python3.8.____cpython_parallel:
+        CONFIG: win_64_blas_implopenblasnumpy1.17python3.8.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implopenblasnumpy1.19python3.9.____cpython_parallel:
+        CONFIG: win_64_blas_implopenblasnumpy1.19python3.9.____cpython_parallel
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implopenblasnumpy1.17python3.7.____cpython_parallel_single:
+        CONFIG: win_64_blas_implopenblasnumpy1.17python3.7.____cpython_parallel_single
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implopenblasnumpy1.17python3.8.____cpython_parallel_single:
+        CONFIG: win_64_blas_implopenblasnumpy1.17python3.8.____cpython_parallel_single
+        UPLOAD_PACKAGES: 'True'
+      win_64_blas_implopenblasnumpy1.19python3.9.____cpython_parallel_single:
+        CONFIG: win_64_blas_implopenblasnumpy1.19python3.9.____cpython_parallel_single
+        UPLOAD_PACKAGES: 'True'
       win_64_blas_implblisnumpy1.17python3.7.____cpython:
         CONFIG: win_64_blas_implblisnumpy1.17python3.7.____cpython
         UPLOAD_PACKAGES: 'True'
