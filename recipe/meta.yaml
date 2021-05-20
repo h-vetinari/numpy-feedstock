@@ -62,15 +62,22 @@ test:
   # this section will execute run_test.py
   requires:
     - pytest
-    - pytest-xdist  # [aarch64]
+    {% set parallel = "False" if (parallel is undefined) else parallel %}
+    {% if aarch64 or (parallel == "True") %}
+    - pytest-xdist
+    {% endif %}
     - hypothesis
     - setuptools
     # make sure we test with all blas implementations
     - blas =*=*{{ blas_impl }}
   commands:
     - f2py -h
-    {% set numproc = "-nauto" if aarch64 else "" %}
-    - pytest --pyargs numpy -k "not ({{ tests_to_skip }})" {{ numproc }} --durations=100 -v
+    {% set numproc = "-nauto" if (aarch64 or (parallel == "True")) else "" %}
+    {% set set_jit = "" if jit_state is undefined else "--jit off" %}
+    {% set pytest_invoc = "pytest" if python_impl != "pypy" else "pypy3 " + set_jit + " -m pytest" %}
+    {% set set_openblas_threads = "DUMMY=1" if set_openblas_threads is undefined else "OPENBLAS_NUM_THREADS=1"%}
+    - set {{ set_openblas_threads }}  # [win]
+    - {{ pytest_invoc }} --pyargs numpy -k "not ({{ tests_to_skip }})" {{ numproc }} --durations=100 -v
   imports:
     - numpy
     - numpy.core.multiarray
