@@ -7,6 +7,15 @@ language: generic
 
 matrix:
   include:
+    - env: CONFIG=linux_ppc64le_blas_implopenblasnumpy1.19python3.7.____73_pypypython_implpypy_bisect_left UPLOAD_PACKAGES=True PLATFORM=linux-ppc64le DOCKER_IMAGE=quay.io/condaforge/linux-anvil-ppc64le
+      os: linux
+      arch: ppc64le
+      dist: focal
+
+    - env: CONFIG=linux_ppc64le_blas_implopenblasnumpy1.19python3.7.____73_pypypython_implpypy_bisect_right UPLOAD_PACKAGES=True PLATFORM=linux-ppc64le DOCKER_IMAGE=quay.io/condaforge/linux-anvil-ppc64le
+      os: linux
+      arch: ppc64le
+      dist: focal
 
     - env: CONFIG=linux_ppc64le_blas_implopenblasnumpy1.19python3.7.____73_pypypython_implpypy_jit_off UPLOAD_PACKAGES=True PLATFORM=linux-ppc64le DOCKER_IMAGE=quay.io/condaforge/linux-anvil-ppc64le
       os: linux
