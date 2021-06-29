@@ -1,4 +1,4 @@
-{% set version = "1.21.0" %}
+{% set version = "1.20.3" %}
 
 package:
   name: numpy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/numpy/numpy/releases/download/v{{ version }}/numpy-{{ version }}.tar.gz
-  sha256: b662c841b29848c04d9134f31dbaa7d4c8e673f45bb3a5f28d02f49c424d558a
+  sha256: b7340f0628ce1823c151e3d2a2a8cba2a3ff1357fba4475a24b1816e75c21f90
 
 build:
   number: 0
@@ -42,6 +42,10 @@ requirements:
 # Probably needs too much memory on ppc64le, it sometimes fails on travis
 {% set tests_to_skip = tests_to_skip + " or test_large_archive" %}                  # [ppc64le]
 {% set tests_to_skip = tests_to_skip + " or test_big_arrays" %}                     # [ppc64le]
+# behaviour change in lapack 3.9.1 / openblas 0.3.15
+# https://github.com/numpy/numpy/issues/18914
+# pytest -k "not xxx" filters all occurences of the string; need to link with class name
+{% set tests_to_skip = tests_to_skip + " or (TestCond and test_nan)" %}
 # the following skips are the longest running tests at time of writing; all over 45sec, up to 750sec
 # skipping is done purely to stop pypy jobs from regularly timing out on drone/travis
 {% if (aarch64 or ppc64le) and (python_impl == "pypy") %}
