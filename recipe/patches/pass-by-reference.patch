@@ -1,0 +1,178 @@
+diff --git a/numpy/core/src/umath/ufunc_object.c b/numpy/core/src/umath/ufunc_object.c
+index 1b47e74ac..e6a6ee23b 100644
+--- a/numpy/core/src/umath/ufunc_object.c
++++ b/numpy/core/src/umath/ufunc_object.c
+@@ -273,7 +273,7 @@ _get_output_array_method(PyObject *obj, PyObject *method,
+  * should just have PyArray_Return called.
+  */
+ static void
+-_find_array_prepare(ufunc_full_args args,
++_find_array_prepare(ufunc_full_args *args,
+                     PyObject **output_prep, int nout)
+ {
+     int i;
+@@ -283,7 +283,7 @@ _find_array_prepare(ufunc_full_args args,
+      * Determine the prepping function given by the input arrays
+      * (could be NULL).
+      */
+-    prep = _find_array_method(args.in, npy_um_str_array_prepare);
++    prep = _find_array_method(args->in, npy_um_str_array_prepare);
+     /*
+      * For all the output arrays decide what to do.
+      *
+@@ -296,7 +296,7 @@ _find_array_prepare(ufunc_full_args args,
+      * exact ndarray so that no PyArray_Return is
+      * done in that case.
+      */
+-    if (args.out == NULL) {
++    if (args->out == NULL) {
+         for (i = 0; i < nout; i++) {
+             Py_XINCREF(prep);
+             output_prep[i] = prep;
+@@ -305,7 +305,7 @@ _find_array_prepare(ufunc_full_args args,
+     else {
+         for (i = 0; i < nout; i++) {
+             output_prep[i] = _get_output_array_method(
+-                PyTuple_GET_ITEM(args.out, i), npy_um_str_array_prepare, prep);
++                PyTuple_GET_ITEM(args->out, i), npy_um_str_array_prepare, prep);
+         }
+     }
+     Py_XDECREF(prep);
+@@ -402,7 +402,7 @@ _ufunc_setup_flags(PyUFuncObject *ufunc, npy_uint32 op_in_flags,
+  * should just have PyArray_Return called.
+  */
+ static void
+-_find_array_wrap(ufunc_full_args args, npy_bool subok,
++_find_array_wrap(ufunc_full_args *args, npy_bool subok,
+                  PyObject **output_wrap, int nin, int nout)
+ {
+     int i;
+@@ -420,7 +420,7 @@ _find_array_wrap(ufunc_full_args args, npy_bool subok,
+      * Determine the wrapping function given by the input arrays
+      * (could be NULL).
+      */
+-    wrap = _find_array_method(args.in, npy_um_str_array_wrap);
++    wrap = _find_array_method(args->in, npy_um_str_array_wrap);
+ 
+     /*
+      * For all the output arrays decide what to do.
+@@ -435,7 +435,7 @@ _find_array_wrap(ufunc_full_args args, npy_bool subok,
+      * done in that case.
+      */
+ handle_out:
+-    if (args.out == NULL) {
++    if (args->out == NULL) {
+         for (i = 0; i < nout; i++) {
+             Py_XINCREF(wrap);
+             output_wrap[i] = wrap;
+@@ -444,7 +444,7 @@ handle_out:
+     else {
+         for (i = 0; i < nout; i++) {
+             output_wrap[i] = _get_output_array_method(
+-                PyTuple_GET_ITEM(args.out, i), npy_um_str_array_wrap, wrap);
++                PyTuple_GET_ITEM(args->out, i), npy_um_str_array_wrap, wrap);
+         }
+     }
+ 
+@@ -911,7 +911,7 @@ _wheremask_converter(PyObject *obj, PyArrayObject **wheremask)
+  */
+ static int
+ convert_ufunc_arguments(PyUFuncObject *ufunc,
+-        ufunc_full_args full_args, PyArrayObject **out_op,
++        ufunc_full_args *full_args, PyArrayObject **out_op,
+         PyObject *order_obj, NPY_ORDER *out_order,
+         PyObject *casting_obj, NPY_CASTING *out_casting,
+         PyObject *subok_obj, npy_bool *out_subok,
+@@ -925,7 +925,7 @@ convert_ufunc_arguments(PyUFuncObject *ufunc,
+ 
+     /* Convert and fill in input arguments */
+     for (int i = 0; i < nin; i++) {
+-        obj = PyTuple_GET_ITEM(full_args.in, i);
++        obj = PyTuple_GET_ITEM(full_args->in, i);
+ 
+         if (PyArray_Check(obj)) {
+             PyArrayObject *obj_a = (PyArrayObject *)obj;
+@@ -942,9 +942,9 @@ convert_ufunc_arguments(PyUFuncObject *ufunc,
+     }
+ 
+     /* Convert and fill in output arguments */
+-    if (full_args.out != NULL) {
++    if (full_args->out != NULL) {
+         for (int i = 0; i < nout; i++) {
+-            obj = PyTuple_GET_ITEM(full_args.out, i);
++            obj = PyTuple_GET_ITEM(full_args->out, i);
+             if (_set_out_array(obj, out_op + i + nin) < 0) {
+                 goto fail;
+             }
+@@ -4484,11 +4484,18 @@ _get_normalized_typetup(PyUFuncObject *ufunc,
+  */
+ static PyObject *
+ replace_with_wrapped_result_and_return(PyUFuncObject *ufunc,
+-        ufunc_full_args full_args, npy_bool subok,
++        ufunc_full_args *full_args, npy_bool subok,
+         PyArrayObject *result_arrays[])
+ {
+     PyObject *retobj[NPY_MAXARGS];
+     PyObject *wraparr[NPY_MAXARGS];
++    if (full_args->in == NULL) {
++        if (PyErr_Occurred() == NULL) {
++            PyErr_SetString(PyExc_RuntimeError,
++                "got NULL for full_args.in 4495");
++        }
++        goto fail;
++    }
+     _find_array_wrap(full_args, subok, wraparr, ufunc->nin, ufunc->nout);
+ 
+     /* wrap outputs */
+@@ -4496,7 +4503,7 @@ replace_with_wrapped_result_and_return(PyUFuncObject *ufunc,
+         _ufunc_context context;
+ 
+         context.ufunc = ufunc;
+-        context.args = full_args;
++        context.args = *full_args;
+         context.out_i = i;
+ 
+         retobj[i] = _apply_array_wrap(wraparr[i], result_arrays[i], &context);
+@@ -4739,7 +4746,7 @@ ufunc_generic_fastcall(PyUFuncObject *ufunc,
+     NPY_CASTING casting = NPY_DEFAULT_ASSIGN_CASTING;
+     npy_bool subok = NPY_TRUE;
+     int keepdims = -1;  /* We need to know if it was passed */
+-    if (convert_ufunc_arguments(ufunc, full_args, operands,
++    if (convert_ufunc_arguments(ufunc, &full_args, operands,
+             order_obj, &order,
+             casting_obj, &casting,
+             subok_obj, &subok,
+@@ -4754,7 +4761,7 @@ ufunc_generic_fastcall(PyUFuncObject *ufunc,
+     }
+ 
+     if (subok) {
+-        _find_array_prepare(full_args, output_array_prepare, nout);
++        _find_array_prepare(&full_args, output_array_prepare, nout);
+     }
+ 
+     /*
+@@ -4794,11 +4801,19 @@ ufunc_generic_fastcall(PyUFuncObject *ufunc,
+         }
+     }
+     Py_XDECREF(typetup);
+-
+-    /* The following steals the references to the outputs: */
+-    PyObject *result = replace_with_wrapped_result_and_return(ufunc,
+-            full_args, subok, operands+nin);
+-    Py_XDECREF(full_args.in);
++    PyObject* result = NULL;
++    if (full_args.in == NULL) {
++        if (PyErr_Occurred() == NULL) {
++            PyErr_SetString(PyExc_RuntimeError,
++                "got NULL for full_args.in 4808");
++        }
++    }
++    else {
++        /* The following steals the references to the outputs: */
++        result = replace_with_wrapped_result_and_return(ufunc,
++            &full_args, subok, operands + nin);
++        Py_XDECREF(full_args.in);
++    }
+     Py_XDECREF(full_args.out);
+     return result;
+ 
