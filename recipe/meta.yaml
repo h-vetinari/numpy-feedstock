@@ -7,6 +7,8 @@ package:
 source:
   url: https://github.com/numpy/numpy/releases/download/v{{ version }}/numpy-{{ version }}.tar.gz
   sha256: b662c841b29848c04d9134f31dbaa7d4c8e673f45bb3a5f28d02f49c424d558a
+  patches:
+    - patches/0001-pass-by-reference.patch
 
 build:
   number: 0
