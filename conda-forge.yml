@@ -16,6 +16,7 @@ provider:
   win_arm64: default
 remote_ci_setup:
   - conda-forge-ci-setup >=4.29
+  - py-rattler >=0.27
 test: native_and_emulated
 workflow_settings:
   pagefile_size:
