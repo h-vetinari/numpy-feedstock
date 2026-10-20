@@ -27,8 +27,7 @@ cmd = "pixi exec --list='^conda-smithy$' conda-smithy lint --conda-forge recipe"
 description = "Lint the feedstock recipe"
 
 [feature.build.dependencies]
-conda-build = ">=26.3"
-conda-forge-ci-setup = "4.*"
+conda-forge-ci-setup = ">=4.29.2"
 rattler-build = "*"
 
 [feature.build.tasks.inspect-all]
